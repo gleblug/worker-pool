@@ -68,7 +68,6 @@ func (wp *WorkerPool) Remove(count int) {
 	count = min(count, len(wp.workers))
 
 	for i := len(wp.workers) - count; i < len(wp.workers); i++ {
-		// TODO: add check that worker really deactivate
 		go wp.workers[i].Deactivate()
 	}
 

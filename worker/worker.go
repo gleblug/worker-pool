@@ -25,6 +25,7 @@ func (p Worker) Work(wg *sync.WaitGroup, input <-chan string, output chan<- stri
 	defer func() { wg.Done() }()
 	for {
 		select {
+		// alternative way -- use context.WithCancel(...)
 		case <-p.done:
 			return
 		default:
