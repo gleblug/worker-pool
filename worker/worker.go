@@ -1,4 +1,4 @@
-package workerpool
+package worker
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ type Worker struct {
 	done chan struct{}
 }
 
-func NewWorker(id int) Worker {
+func New(id int) Worker {
 	return Worker{
 		id:   id,
 		done: make(chan struct{}, 1),

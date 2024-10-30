@@ -1,4 +1,4 @@
-package workerpool
+package worker
 
 import (
 	"fmt"
@@ -10,6 +10,7 @@ import (
 const (
 	workersCount = 3
 	maxIndex     = 1000
+	mockString   = "test_string"
 )
 
 func TestWorker(t *testing.T) {
@@ -18,7 +19,7 @@ func TestWorker(t *testing.T) {
 	wg := sync.WaitGroup{}
 	for range workersCount {
 		workerIndex := rand.Intn(maxIndex)
-		w := NewWorker(workerIndex)
+		w := New(workerIndex)
 		t.Log("Worker created")
 
 		wg.Add(1)

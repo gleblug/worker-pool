@@ -1,24 +1,32 @@
 package workerpool
 
-import "sync"
+import (
+	"sync"
+	"worker-pool/worker"
+)
+
+type (
+	WorkerSlice = []worker.Worker
+	DataChan    = chan string
+)
 
 type WorkerPool struct {
-	workers []Worker
-	input   chan string
-	output  chan string
+	workers WorkerSlice
+	input   DataChan
+	output  DataChan
 	wg      sync.WaitGroup
 	mu      sync.Mutex
 }
 
 func New(wcount int) WorkerPool {
-	workers := make([]Worker, wcount)
+	workers := make(WorkerSlice, wcount)
 	for i := range workers {
-		workers[i] = NewWorker(i)
+		workers[i] = worker.New(i)
 	}
 	return WorkerPool{
 		workers: workers,
-		input:   make(chan string),
-		output:  make(chan string),
+		input:   make(DataChan),
+		output:  make(DataChan),
 		wg:      sync.WaitGroup{},
 		mu:      sync.Mutex{},
 	}
@@ -40,9 +48,9 @@ func (wp *WorkerPool) Add(count int) {
 	wp.mu.Lock()
 	defer func() { wp.mu.Unlock() }()
 
-	newWorkers := make([]Worker, count)
+	newWorkers := make(WorkerSlice, count)
 	for i := range newWorkers {
-		w := NewWorker(i + len(wp.workers))
+		w := worker.New(i + len(wp.workers))
 
 		wp.wg.Add(1)
 		go w.Work(&wp.wg, wp.input, wp.output)
