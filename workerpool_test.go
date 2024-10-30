@@ -39,13 +39,37 @@ func TestWorkerPoolAdding(t *testing.T) {
 	go generateInput(&wg, dataCount, wp.input)
 	go printOutput(&wg, wp.output)
 
-	time.Sleep(3 * time.Second)
+	time.Sleep(2 * time.Second)
 	wp.Add(1)
 	t.Log("1 worker added")
 
-	time.Sleep(500 * time.Millisecond)
+	time.Sleep(2 * time.Second)
 	wp.Add(2)
 	t.Log("2 workers added")
+
+	wg.Wait()
+}
+
+func TestWorkerPoolRemoving(t *testing.T) {
+	const initCount = 4
+
+	wp := New(initCount)
+	t.Logf("Worker pool with %d worker created", initCount)
+	go wp.Run()
+	t.Log("Worker pool running")
+
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+	go generateInput(&wg, dataCount, wp.input)
+	go printOutput(&wg, wp.output)
+
+	time.Sleep(2 * time.Second)
+	wp.Remove(2)
+	t.Log("2 workers removed")
+
+	time.Sleep(2 * time.Second)
+	wp.Remove(1)
+	t.Log("1 workers removed")
 
 	wg.Wait()
 }

@@ -32,17 +32,17 @@ func (wp *WorkerPool) Run() {
 		go w.Work(&wp.wg, wp.input, wp.output)
 	}
 	wp.mu.Unlock()
+
 	wp.wg.Wait()
 }
 
 func (wp *WorkerPool) Add(count int) {
-	newWorkers := make([]Worker, count)
 	wp.mu.Lock()
-	currentCount := len(wp.workers)
-	wp.mu.Unlock()
+	defer func() { wp.mu.Unlock() }()
 
+	newWorkers := make([]Worker, count)
 	for i := range newWorkers {
-		w := NewWorker(i + currentCount)
+		w := NewWorker(i + len(wp.workers))
 
 		wp.wg.Add(1)
 		go w.Work(&wp.wg, wp.input, wp.output)
@@ -50,23 +50,19 @@ func (wp *WorkerPool) Add(count int) {
 		newWorkers[i] = w
 	}
 
-	wp.mu.Lock()
 	wp.workers = append(wp.workers, newWorkers...)
-	wp.mu.Unlock()
 }
 
 func (wp *WorkerPool) Remove(count int) {
-	// TODO: add count < workers count check
 	wp.mu.Lock()
-	currentCount := len(wp.workers)
-	wp.mu.Unlock()
-	
-	for i := currentCount - count; i < currentCount; i++ {
-		// TODO: wait until workers is really deactivate (wait group)
+	defer func() { wp.mu.Unlock() }()
+
+	count = min(count, len(wp.workers))
+
+	for i := len(wp.workers) - count; i < len(wp.workers); i++ {
+		// TODO: add check that worker really deactivate
 		go wp.workers[i].Deactivate()
 	}
 
-	wp.mu.Lock()
-	wp.workers = wp.workers[:currentCount-count]
-	wp.mu.Unlock()
+	wp.workers = wp.workers[:len(wp.workers)-count]
 }

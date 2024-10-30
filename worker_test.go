@@ -8,15 +8,15 @@ import (
 )
 
 const (
-	testCount = 3
-	maxIndex  = 1000
+	workersCount = 3
+	maxIndex     = 1000
 )
 
 func TestWorker(t *testing.T) {
 	input := make(chan string)
 	output := make(chan string)
 	wg := sync.WaitGroup{}
-	for range testCount {
+	for range workersCount {
 		workerIndex := rand.Intn(maxIndex)
 		w := NewWorker(workerIndex)
 		t.Log("Worker created")
@@ -30,8 +30,8 @@ func TestWorker(t *testing.T) {
 		if res := <-output; expect != res {
 			t.Errorf("Expected %q != Result %q", expect, res)
 		}
-
 		t.Log("Expected result passed")
+
 		w.Deactivate()
 		t.Log("Worker deactivated")
 	}
