@@ -1,6 +1,14 @@
 package workerpool
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+const (
+	sleepTime = 1 * time.Second
+)
 
 type Worker struct {
 	id   int
@@ -14,7 +22,8 @@ func NewWorker(id int) Worker {
 	}
 }
 
-func (p Worker) Work(input <-chan string, output chan<- string) {
+func (p Worker) Work(wg *sync.WaitGroup, input <-chan string, output chan<- string) {
+	defer func() { wg.Done() }()
 	for {
 		select {
 		case arg, ok := <-input:
@@ -22,6 +31,7 @@ func (p Worker) Work(input <-chan string, output chan<- string) {
 				return
 			}
 			output <- fmt.Sprintf("%d work: %s", p.id, arg)
+			time.Sleep(sleepTime)
 		case <-p.done:
 			return
 		}
