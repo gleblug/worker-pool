@@ -1,7 +1,6 @@
 package worker
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -35,7 +34,7 @@ func (p Worker) Work(wg *sync.WaitGroup, input <-chan string, output chan<- stri
 					return
 				}
 				time.Sleep(sleepTime)
-				output <- fmt.Sprintf("%d work: %s", p.id, arg)
+				output <- Job(arg, p.id)
 			default:
 			}
 		}
