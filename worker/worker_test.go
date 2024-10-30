@@ -1,7 +1,6 @@
 package worker
 
 import (
-	"fmt"
 	"math/rand"
 	"sync"
 	"testing"
@@ -27,7 +26,7 @@ func TestWorker(t *testing.T) {
 		t.Log("Worker's goroutine started")
 		input <- mockString
 
-		expect := fmt.Sprintf("%d work: %s", workerIndex, mockString)
+		expect := Job(mockString, workerIndex)
 		if res := <-output; expect != res {
 			t.Errorf("Expected %q != Result %q", expect, res)
 		}
