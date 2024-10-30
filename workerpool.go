@@ -6,12 +6,11 @@ import (
 )
 
 type (
-	WorkerSlice = []worker.Worker
-	DataChan    = chan string
+	DataChan = chan string
 )
 
 type WorkerPool struct {
-	workers WorkerSlice
+	workers []worker.Worker
 	input   DataChan
 	output  DataChan
 	wg      sync.WaitGroup
@@ -19,7 +18,7 @@ type WorkerPool struct {
 }
 
 func New(wcount int) WorkerPool {
-	workers := make(WorkerSlice, wcount)
+	workers := make([]worker.Worker, wcount)
 	for i := range workers {
 		workers[i] = worker.New(i)
 	}
@@ -48,7 +47,7 @@ func (wp *WorkerPool) Add(count int) {
 	wp.mu.Lock()
 	defer func() { wp.mu.Unlock() }()
 
-	newWorkers := make(WorkerSlice, count)
+	newWorkers := make([]worker.Worker, count)
 	for i := range newWorkers {
 		w := worker.New(i + len(wp.workers))
 
