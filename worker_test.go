@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	testCount = 1
+	testCount = 3
 	maxIndex  = 1000
 )
 
