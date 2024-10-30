@@ -3,13 +3,13 @@ package workerpool
 import "fmt"
 
 type Worker struct {
-	id int
+	id   int
 	done chan struct{}
 }
 
 func NewWorker(id int) Worker {
 	return Worker{
-		id: id,
+		id:   id,
 		done: make(chan struct{}),
 	}
 }
@@ -17,7 +17,7 @@ func NewWorker(id int) Worker {
 func (p Worker) Work(input <-chan string, output chan<- string) {
 	for {
 		select {
-		case arg, ok := <- input:
+		case arg, ok := <-input:
 			if !ok {
 				return
 			}
@@ -29,5 +29,5 @@ func (p Worker) Work(input <-chan string, output chan<- string) {
 }
 
 func (p *Worker) Deactivate() {
-	p.done<-struct{}{}
+	p.done <- struct{}{}
 }
