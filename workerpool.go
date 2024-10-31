@@ -17,15 +17,15 @@ type WorkerPool struct {
 	mu      sync.Mutex
 }
 
-func New(wcount int) WorkerPool {
+func New(wcount, bufsize int) WorkerPool {
 	workers := make([]worker.Worker, wcount)
 	for i := range workers {
 		workers[i] = worker.New(i)
 	}
 	return WorkerPool{
 		workers: workers,
-		input:   make(DataChan),
-		output:  make(DataChan),
+		input:   make(DataChan, bufsize),
+		output:  make(DataChan, bufsize),
 		wg:      sync.WaitGroup{},
 		mu:      sync.Mutex{},
 	}

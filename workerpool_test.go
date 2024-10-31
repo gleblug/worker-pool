@@ -9,11 +9,12 @@ import (
 
 const (
 	dataCount  = 25
+	bufSize = 10
 	mockString = "test_string"
 )
 
 func TestWorkerPool(t *testing.T) {
-	wp := New(10)
+	wp := New(10, bufSize)
 	t.Log("Worker pool created")
 	go wp.Run()
 	t.Log("Worker pool running")
@@ -29,7 +30,7 @@ func TestWorkerPool(t *testing.T) {
 func TestWorkerPoolAdding(t *testing.T) {
 	const initCount = 1
 
-	wp := New(initCount)
+	wp := New(initCount, bufSize)
 	t.Logf("Worker pool with %d worker created", initCount)
 	go wp.Run()
 	t.Log("Worker pool running")
@@ -53,7 +54,7 @@ func TestWorkerPoolAdding(t *testing.T) {
 func TestWorkerPoolRemoving(t *testing.T) {
 	const initCount = 4
 
-	wp := New(initCount)
+	wp := New(initCount, bufSize)
 	t.Logf("Worker pool with %d worker created", initCount)
 	go wp.Run()
 	t.Log("Worker pool running")
